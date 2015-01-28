@@ -1,5 +1,8 @@
 # Carrooi/Favorites
 
+[![Build Status](https://img.shields.io/travis/Carrooi/Nette-Favorites.svg?style=flat-square)](https://travis-ci.org/Carrooi/Nette-Favorites)
+[![Donate](https://img.shields.io/badge/donate-PayPal-brightgreen.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BQN5R3E85DJRS)
+
 Favorites module in Doctrine for Nette framework.
 
 ## Installation
