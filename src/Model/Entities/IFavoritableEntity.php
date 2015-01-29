@@ -17,21 +17,21 @@ interface IFavoritableEntity
 
 
 	/**
-	 * @param \Carrooi\Favorites\Model\Entities\FavoriteItem $favorite
+	 * @param \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity $favorite
 	 * @return $this
 	 */
-	public function addFavorite(FavoriteItem $favorite);
+	public function addFavorite(IFavoriteItemEntity $favorite);
 
 
 	/**
-	 * @param \Carrooi\Favorites\Model\Entities\FavoriteItem $favorite
+	 * @param \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity $favorite
 	 * @return $this
 	 */
-	public function removeFavorite(FavoriteItem $favorite);
+	public function removeFavorite(IFavoriteItemEntity $favorite);
 
 
 	/**
-	 * @return \Carrooi\Favorites\Model\Entities\FavoriteItem[]
+	 * @return \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity[]
 	 */
 	public function getFavorites();
 

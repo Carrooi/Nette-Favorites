@@ -27,10 +27,10 @@ trait TFavorites
 
 
 	/**
-	 * @param \Carrooi\Favorites\Model\Entities\FavoriteItem $favorite
+	 * @param \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity $favorite
 	 * @return $this
 	 */
-	public function addFavorite(FavoriteItem $favorite)
+	public function addFavorite(IFavoriteItemEntity $favorite)
 	{
 		$this->initFavorites();
 		$this->favorites->add($favorite);
@@ -40,10 +40,10 @@ trait TFavorites
 
 
 	/**
-	 * @param \Carrooi\Favorites\Model\Entities\FavoriteItem $favorite
+	 * @param \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity $favorite
 	 * @return $this
 	 */
-	public function removeFavorite(FavoriteItem $favorite)
+	public function removeFavorite(IFavoriteItemEntity $favorite)
 	{
 		$this->initFavorites();
 		$this->favorites->removeElement($favorite);
@@ -53,7 +53,7 @@ trait TFavorites
 
 
 	/**
-	 * @return \Carrooi\Favorites\Model\Entities\FavoriteItem[]
+	 * @return \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity[]
 	 */
 	public function getFavorites()
 	{

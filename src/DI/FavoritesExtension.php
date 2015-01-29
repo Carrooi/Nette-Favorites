@@ -19,10 +19,14 @@ class FavoritesExtension extends CompilerExtension implements IEntityProvider, I
 	/** @var array */
 	private $defaults = [
 		'userClass' => null,
+		'favoriteItemClass' => 'Carrooi\Favorites\Model\Entities\DefaultFavoriteItem',
 	];
 
 	/** @var string */
 	private $userClass;
+
+	/** @var string */
+	private $favoriteItemClass;
 
 
 	public function loadConfiguration()
@@ -35,13 +39,15 @@ class FavoritesExtension extends CompilerExtension implements IEntityProvider, I
 		}
 
 		$this->userClass = $config['userClass'];
+		$this->favoriteItemClass = $config['favoriteItemClass'];
 
 		$builder->addDefinition($this->prefix('events.relations'))
 			->setClass('Carrooi\Favorites\Model\Events\FavoritesRelationSubscriber')
 			->addTag(EventsExtension::TAG_SUBSCRIBER);
 
 		$builder->addDefinition($this->prefix('facade.favorites'))
-			->setClass('Carrooi\Favorites\Model\Facades\FavoriteItemsFacade');
+			->setClass('Carrooi\Favorites\Model\Facades\FavoriteItemsFacade')
+			->setArguments([$this->favoriteItemClass]);
 	}
 
 
@@ -63,6 +69,7 @@ class FavoritesExtension extends CompilerExtension implements IEntityProvider, I
 	{
 		return [
 			'Carrooi\Favorites\Model\Entities\IUserEntity' => $this->userClass,
+			'Carrooi\Favorites\Model\Entities\IFavoriteItemEntity' => $this->favoriteItemClass,
 		];
 	}
 

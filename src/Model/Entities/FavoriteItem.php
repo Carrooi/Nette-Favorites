@@ -8,11 +8,11 @@ use Kdyby\Doctrine\Entities\BaseEntity;
 
 /**
  *
- * @ORM\Entity
+ * @ORM\MappedSuperclass
  *
  * @author David Kudera
  */
-class FavoriteItem extends BaseEntity
+abstract class FavoriteItem extends BaseEntity implements IFavoriteItemEntity
 {
 
 

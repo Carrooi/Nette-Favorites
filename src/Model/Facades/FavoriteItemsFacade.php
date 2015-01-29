@@ -5,7 +5,6 @@ namespace Carrooi\Favorites\Model\Facades;
 use Carrooi\Favorites\InvalidArgumentException;
 use Carrooi\Favorites\ItemAlreadyInFavorites;
 use Carrooi\Favorites\ItemNotInFavorites;
-use Carrooi\Favorites\Model\Entities\FavoriteItem;
 use Carrooi\Favorites\Model\Entities\IFavoritableEntity;
 use Carrooi\Favorites\Model\Entities\IUserEntity;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -21,23 +20,47 @@ class FavoriteItemsFacade extends Object
 {
 
 
+	/** @var string */
+	private $class;
+
 	/** @var \Kdyby\Doctrine\EntityDao */
 	private $dao;
 
 
 	/**
+	 * @param string $class
 	 * @param \Kdyby\Doctrine\EntityManager $em
 	 */
-	public function __construct(EntityManager $em)
+	public function __construct($class, EntityManager $em)
 	{
-		$this->dao = $em->getRepository(FavoriteItem::getClassName());
+		$this->class = $class;
+		$this->dao = $em->getRepository('Carrooi\Favorites\Model\Entities\IFavoriteItemEntity');
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getClass()
+	{
+		return $this->class;
+	}
+
+
+	/**
+	 * @return \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity
+	 */
+	public function createEntity()
+	{
+		$class = $this->getClass();
+		return new $class;
 	}
 
 
 	/**
 	 * @param \Carrooi\Favorites\Model\Entities\IUserEntity $user
 	 * @param \Carrooi\Favorites\Model\Entities\IFavoritableEntity $item
-	 * @return \Carrooi\Favorites\Model\Entities\FavoriteItem
+	 * @return \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity
 	 */
 	public function addItemToFavorites(IUserEntity $user, IFavoritableEntity $item)
 	{
@@ -45,7 +68,7 @@ class FavoriteItemsFacade extends Object
 			throw new ItemAlreadyInFavorites('User '. $user->getId(). ' already has item '. get_class($item). '('. $item->getId(). ') in favorites.');
 		}
 
-		$favorite = new FavoriteItem;
+		$favorite = $this->createEntity();
 		$favorite->setUser($user);
 
 		$item->addFavorite($favorite);
@@ -92,16 +115,16 @@ class FavoriteItemsFacade extends Object
 	/**
 	 * @param \Carrooi\Favorites\Model\Entities\IUserEntity $user
 	 * @param \Carrooi\Favorites\Model\Entities\IFavoritableEntity $item
-	 * @return \Carrooi\Favorites\Model\Entities\FavoriteItem
+	 * @return \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity
 	 */
 	public function findOneByUserAndItem(IUserEntity $user, IFavoritableEntity $item)
 	{
 		$rsm = new ResultSetMapping;
-		$rsm->addEntityResult(FavoriteItem::getClassName(), 'f');
+		$rsm->addEntityResult('Carrooi\Favorites\Model\Entities\IFavoriteItemEntity', 'f');
 		$rsm->addFieldResult('f', 'id', 'id');
 		$rsm->addMetaResult('f', 'user_id', 'user');
 
-		$favoriteTable = $this->dao->getEntityManager()->getClassMetadata(FavoriteItem::getClassName())->getTableName();
+		$favoriteTable = $this->dao->getEntityManager()->getClassMetadata('Carrooi\Favorites\Model\Entities\IFavoriteItemEntity')->getTableName();
 		$articleMetadata = $this->dao->getEntityManager()->getClassMetadata(get_class($item))->getAssociationMapping('favorites');
 
 		$joinTable = $articleMetadata['joinTable']['name'];

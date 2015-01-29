@@ -149,6 +149,35 @@ $user = $this->user->getCurrentSomehow();
 $favoritesFacade->findAllItemsByUserAndType($user, Article::getClassName());
 ```
 
+## Custom FavoriteItem entity
+
+```neon
+favorites:
+
+	userClass: App\Model\Entities\User
+	favoriteItemClass: App\Model\Entities\FavoriteItem
+```
+
+```php
+namespace App\Model\Entities;
+
+use Carrooi\Favorites\Model\Entities\DefaultFavoriteItem;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ * @author David Kudera
+ */
+class FavoriteItem extends DefaultFavoriteItem
+{
+
+	// ...
+	
+}
+```
+
+Now you have your own implementation of `FavoriteItem` entity.
+
 ## Changelog
 
 * 1.0.0
