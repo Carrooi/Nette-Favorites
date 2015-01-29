@@ -10,6 +10,7 @@ use Carrooi\Favorites\Model\Entities\IFavoritableEntity;
 use Carrooi\Favorites\Model\Entities\IUserEntity;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Kdyby\Doctrine\EntityManager;
+use Kdyby\Doctrine\ResultSet;
 use Nette\Object;
 
 /**
@@ -121,7 +122,7 @@ class FavoriteItemsFacade extends Object
 	/**
 	 * @param \Carrooi\Favorites\Model\Entities\IUserEntity $user
 	 * @param string $itemClass
-	 * @return \
+	 * @return \Kdyby\Doctrine\ResultSet|\Carrooi\Favorites\Model\Entities\IFavoritableEntity[]
 	 */
 	public function findAllItemsByUserAndType(IUserEntity $user, $itemClass)
 	{
@@ -129,12 +130,12 @@ class FavoriteItemsFacade extends Object
 			throw new InvalidArgumentException('Could not find favorite items for '. $itemClass. ' entity.');
 		}
 
-		return $this->dao->createQueryBuilder()
+		$dql = $this->dao->createQueryBuilder()
 			->select('i')->from($itemClass, 'i')
 			->join('i.favorites', 'f')
-			->andWhere('f.user = :user')->setParameter('user', $user)
-			->getQuery()
-			->getResult();
+			->andWhere('f.user = :user')->setParameter('user', $user);
+
+		return new ResultSet($dql->getQuery());
 	}
 
 }
