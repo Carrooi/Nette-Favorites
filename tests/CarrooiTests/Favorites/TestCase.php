@@ -24,6 +24,7 @@ class TestCase extends BaseTestCase
 
 		$config = new Configurator;
 		$config->setTempDirectory(TEMP_DIR);
+		$config->addParameters(['container' => ['class' => 'SystemContainer_' . md5($customConfig)]]);
 		$config->addParameters(['appDir' => __DIR__. '/../FavoritesApp']);
 		$config->addConfig(__DIR__. '/../FavoritesApp/config/config.neon');
 		$config->addConfig(FileMock::create('parameters: {databasePath: %tempDir%/database}', 'neon'));
