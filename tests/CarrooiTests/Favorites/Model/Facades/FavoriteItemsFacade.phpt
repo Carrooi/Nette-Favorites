@@ -12,6 +12,7 @@ namespace CarrooiTests\Favorites\Model\Facades;
 use CarrooiTests\Favorites\TestCase;
 use CarrooiTests\FavoritesApp\Model\Entities\Article;
 use Tester\Assert;
+use Tester\FileMock;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -34,11 +35,12 @@ class FavoriteItemsFacadeTest extends TestCase
 
 
 	/**
+	 * @param string $customConfig
 	 * @return \Nette\DI\Container
 	 */
-	protected function createContainer()
+	protected function createContainer($customConfig = null)
 	{
-		$container = parent::createContainer();
+		$container = parent::createContainer($customConfig);
 
 		$this->favorites = $container->getByType('Carrooi\Favorites\Model\Facades\FavoriteItemsFacade');
 		$this->articles = $container->getByType('CarrooiTests\FavoritesApp\Model\Facades\ArticlesFacade');

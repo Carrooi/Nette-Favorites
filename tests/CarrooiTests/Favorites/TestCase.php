@@ -25,9 +25,10 @@ class TestCase extends BaseTestCase
 
 
 	/**
+	 * @param string $customConfig
 	 * @return \Nette\DI\Container
 	 */
-	protected function createContainer()
+	protected function createContainer($customConfig = null)
 	{
 		if (!isset($this->container)) {
 			copy(__DIR__. '/../FavoritesApp/Model/database', TEMP_DIR. '/database');
@@ -37,6 +38,10 @@ class TestCase extends BaseTestCase
 			$config->addParameters(['appDir' => __DIR__. '/../FavoritesApp']);
 			$config->addConfig(__DIR__. '/../FavoritesApp/config/config.neon');
 			$config->addConfig(FileMock::create('parameters: {databasePath: %tempDir%/database}', 'neon'));
+
+			if ($customConfig) {
+				$config->addConfig($customConfig);
+			}
 
 			$this->container = $config->createContainer();
 		}
