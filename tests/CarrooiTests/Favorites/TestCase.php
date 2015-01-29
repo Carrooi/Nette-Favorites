@@ -14,39 +14,25 @@ class TestCase extends BaseTestCase
 {
 
 
-	/** @var \Nette\DI\Container */
-	private $container;
-
-
-	public function tearDown()
-	{
-		$this->container = null;
-	}
-
-
 	/**
 	 * @param string $customConfig
 	 * @return \Nette\DI\Container
 	 */
 	protected function createContainer($customConfig = null)
 	{
-		if (!isset($this->container)) {
-			copy(__DIR__. '/../FavoritesApp/Model/database', TEMP_DIR. '/database');
+		copy(__DIR__. '/../FavoritesApp/Model/database', TEMP_DIR. '/database');
 
-			$config = new Configurator;
-			$config->setTempDirectory(TEMP_DIR);
-			$config->addParameters(['appDir' => __DIR__. '/../FavoritesApp']);
-			$config->addConfig(__DIR__. '/../FavoritesApp/config/config.neon');
-			$config->addConfig(FileMock::create('parameters: {databasePath: %tempDir%/database}', 'neon'));
+		$config = new Configurator;
+		$config->setTempDirectory(TEMP_DIR);
+		$config->addParameters(['appDir' => __DIR__. '/../FavoritesApp']);
+		$config->addConfig(__DIR__. '/../FavoritesApp/config/config.neon');
+		$config->addConfig(FileMock::create('parameters: {databasePath: %tempDir%/database}', 'neon'));
 
-			if ($customConfig) {
-				$config->addConfig($customConfig);
-			}
-
-			$this->container = $config->createContainer();
+		if ($customConfig) {
+			$config->addConfig($customConfig);
 		}
 
-		return $this->container;
+		return $config->createContainer();
 	}
 
 }

@@ -12,7 +12,6 @@ namespace CarrooiTests\Favorites\Model\Facades;
 use CarrooiTests\Favorites\TestCase;
 use CarrooiTests\FavoritesApp\Model\Entities\Article;
 use Tester\Assert;
-use Tester\FileMock;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
