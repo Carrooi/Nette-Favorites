@@ -33,16 +33,25 @@ class FavoriteItemsFacadeTest extends TestCase
 	private $users;
 
 
-	public function setUp()
+	/**
+	 * @return \Nette\DI\Container
+	 */
+	protected function createContainer()
 	{
-		$this->favorites = $this->createContainer()->getByType('Carrooi\Favorites\Model\Facades\FavoriteItemsFacade');
-		$this->articles = $this->createContainer()->getByType('CarrooiTests\FavoritesApp\Model\Facades\ArticlesFacade');
-		$this->users = $this->createContainer()->getByType('CarrooiTests\FavoritesApp\Model\Facades\UsersFacade');
+		$container = parent::createContainer();
+
+		$this->favorites = $container->getByType('Carrooi\Favorites\Model\Facades\FavoriteItemsFacade');
+		$this->articles = $container->getByType('CarrooiTests\FavoritesApp\Model\Facades\ArticlesFacade');
+		$this->users = $container->getByType('CarrooiTests\FavoritesApp\Model\Facades\UsersFacade');
+
+		return $container;
 	}
 
 
 	public function testAddItemToFavorites()
 	{
+		$this->createContainer();
+
 		$article = $this->articles->create();
 		$user = $this->users->create();
 
@@ -56,6 +65,8 @@ class FavoriteItemsFacadeTest extends TestCase
 
 	public function testAddItemToFavorites_alreadyExists()
 	{
+		$this->createContainer();
+
 		$article = $this->articles->create();
 		$user = $this->users->create();
 
@@ -69,6 +80,8 @@ class FavoriteItemsFacadeTest extends TestCase
 
 	public function testFindOneByUserAndItem_notExists()
 	{
+		$this->createContainer();
+
 		$article = $this->articles->create();
 		$user = $this->users->create();
 
@@ -78,6 +91,8 @@ class FavoriteItemsFacadeTest extends TestCase
 
 	public function testFindOneByUserAndItem_exists()
 	{
+		$this->createContainer();
+
 		$article = $this->articles->create();
 		$user = $this->users->create();
 
@@ -91,6 +106,8 @@ class FavoriteItemsFacadeTest extends TestCase
 
 	public function testHasInFavorites_false()
 	{
+		$this->createContainer();
+
 		$article = $this->articles->create();
 		$user = $this->users->create();
 
@@ -100,6 +117,8 @@ class FavoriteItemsFacadeTest extends TestCase
 
 	public function testHasInFavorites_true()
 	{
+		$this->createContainer();
+
 		$article = $this->articles->create();
 		$user = $this->users->create();
 
@@ -111,6 +130,8 @@ class FavoriteItemsFacadeTest extends TestCase
 
 	public function testRemoveItemFromFavorites_notExists()
 	{
+		$this->createContainer();
+
 		$article = $this->articles->create();
 		$user = $this->users->create();
 
@@ -122,6 +143,8 @@ class FavoriteItemsFacadeTest extends TestCase
 
 	public function testRemoveItemFromFavorites()
 	{
+		$this->createContainer();
+
 		$article = $this->articles->create();
 		$user = $this->users->create();
 
@@ -136,6 +159,8 @@ class FavoriteItemsFacadeTest extends TestCase
 
 	public function testFindAllItemsByUserAndType()
 	{
+		$this->createContainer();
+
 		$user = $this->users->create();
 
 		for ($i = 0; $i < 5; $i++) {
@@ -153,6 +178,8 @@ class FavoriteItemsFacadeTest extends TestCase
 
 	public function testFindAllItemsByUserAndType_invalid()
 	{
+		$this->createContainer();
+
 		Assert::exception(function() {
 			$this->favorites->findAllItemsByUserAndType($this->users->create(), 'Nette\Object');
 		}, 'Carrooi\Favorites\InvalidArgumentException', 'Could not find favorite items for Nette\Object entity.');
