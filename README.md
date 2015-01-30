@@ -171,6 +171,14 @@ $favoritesFacade->findAllByUser($user);
 
 **That method can be used only in combination with custom associations. See bellow**
 
+#### Count by user
+
+```php
+$user = $this->user->getCurrentSomehow();
+
+$favoritesFacade->getCountByUser($user);
+```
+
 ## Custom FavoriteItem entity
 
 ```neon

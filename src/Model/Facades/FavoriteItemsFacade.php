@@ -223,4 +223,18 @@ class FavoriteItemsFacade extends Object
 		return new ResultSet($dql->getQuery());
 	}
 
+
+	/**
+	 * @param \Carrooi\Favorites\Model\Entities\IUserEntity $user
+	 * @return int
+	 */
+	public function getCountByUser(IUserEntity $user)
+	{
+		return (int) $this->dao->createQueryBuilder('f')
+			->select('COUNT(f) AS num')
+			->andWhere('f.user = :user')->setParameter('user', $user)
+			->getQuery()
+			->getSingleScalarResult();
+	}
+
 }

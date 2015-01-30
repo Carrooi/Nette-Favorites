@@ -284,6 +284,23 @@ class FavoriteItemsFacadeTest extends TestCase
 		Assert::same($articles[2]->getId(), $favorites[2]->getArticle()->getId());
 	}
 
+
+	public function testGetCountByUser()
+	{
+		$this->createContainer();
+
+		$user = $this->users->create();
+
+		$this->favorites->addItemToFavorites($user, $this->articles->create());
+		$this->favorites->addItemToFavorites($user, $this->articles->create());
+		$this->favorites->addItemToFavorites($user, $this->articles->create());
+		$this->favorites->addItemToFavorites($user, $this->articles->create());
+
+		$this->favorites->addItemToFavorites($this->users->create(), $this->articles->create());
+
+		Assert::same(4, $this->favorites->getCountByUser($user));
+	}
+
 }
 
 
