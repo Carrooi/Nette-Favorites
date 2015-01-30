@@ -228,7 +228,7 @@ class FavoriteItemsFacadeTest extends TestCase
 
 		$this->favorites->addItemToFavorites($this->users->create(), $this->articles->create());
 
-		$favorites = $this->favorites->findAllByUser($user);
+		$favorites = $this->favorites->findAllByUser($user)->toArray();
 
 		Assert::count(3, $favorites);
 		Assert::same($articles[0]->getId(), $favorites[0]->getArticle()->getId());

@@ -184,7 +184,7 @@ class FavoriteItemsFacade extends Object
 
 	/**
 	 * @param \Carrooi\Favorites\Model\Entities\IUserEntity $user
-	 * @return \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity[]
+	 * @return \Kdyby\Doctrine\ResultSet|\Carrooi\Favorites\Model\Entities\IFavoriteItemEntity[]
 	 */
 	public function findAllByUser(IUserEntity $user)
 	{
@@ -197,7 +197,7 @@ class FavoriteItemsFacade extends Object
 				->addSelect($options['field']);
 		}
 
-		return $dql->getQuery()->getResult();
+		return new ResultSet($dql->getQuery());
 	}
 
 }
