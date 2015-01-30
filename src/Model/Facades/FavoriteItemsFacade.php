@@ -184,6 +184,29 @@ class FavoriteItemsFacade extends Object
 
 	/**
 	 * @param \Carrooi\Favorites\Model\Entities\IUserEntity $user
+	 * @param string $itemClass
+	 * @return \Kdyby\Doctrine\ResultSet|\Carrooi\Favorites\Model\Entities\IFavoritableEntity[]
+	 */
+	public function findAllByUserAndType(IUserEntity $user, $itemClass)
+	{
+		if (!in_array('Carrooi\Favorites\Model\Entities\IFavoritableEntity', class_implements($itemClass))) {
+			throw new InvalidArgumentException('Could not find favorite items for '. $itemClass. ' entity.');
+		}
+
+		if (!$this->associationsManager->hasAssociation($itemClass)) {
+			throw new InvalidArgumentException('Please register custom associations for '. $itemClass. ' class.');
+		}
+
+		$dql = $this->dao->createQueryBuilder('f')
+			->join('f.'. $this->associationsManager->getField($itemClass), 'i')
+			->andWhere('f.user = :user')->setParameter('user', $user);
+
+		return new ResultSet($dql->getQuery());
+	}
+
+
+	/**
+	 * @param \Carrooi\Favorites\Model\Entities\IUserEntity $user
 	 * @return \Kdyby\Doctrine\ResultSet|\Carrooi\Favorites\Model\Entities\IFavoriteItemEntity[]
 	 */
 	public function findAllByUser(IUserEntity $user)

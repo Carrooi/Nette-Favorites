@@ -149,6 +149,18 @@ $user = $this->user->getCurrentSomehow();
 $favoritesFacade->findAllItemsByUserAndType($user, Article::getClassName());
 ```
 
+#### Find all by user and type
+
+Similar to previous method, but will return `FavoriteItem` entities, not `IFavoritableEntity`.
+
+```php
+$user = $this->user->getCurrentSomehow();
+
+$favoritesFacade->findAllByUserAndType($user, Article::getClassName());
+```
+
+**That method can be used only in combination with custom associations. See bellow**
+
 #### Find all favorites by user
 
 ```php
