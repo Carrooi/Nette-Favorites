@@ -45,7 +45,7 @@ class FavoritesExtensionTest extends TestCase
 	{
 		$this->createContainer();
 
-		Assert::same('Carrooi\Favorites\Model\Entities\DefaultFavoriteItem', $this->favorites->getClass());
+		Assert::same('Carrooi\Favorites\Model\DefaultEntities\DefaultFavoriteItem', $this->favorites->getClass());
 	}
 
 
@@ -64,7 +64,7 @@ class FavoritesExtensionTest extends TestCase
 	{
 		$this->createContainer();
 
-		Assert::type('Carrooi\Favorites\Model\Entities\DefaultFavoriteItem', $this->favorites->createEntity());
+		Assert::type('Carrooi\Favorites\Model\DefaultEntities\DefaultFavoriteItem', $this->favorites->createEntity());
 	}
 
 

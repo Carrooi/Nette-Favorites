@@ -52,37 +52,46 @@ class FavoritesRelationSubscriber implements Subscriber
 		if (in_array('Carrooi\Favorites\Model\Entities\IFavoritableEntity', class_implements($metadata->getName()))) {
 			$namingStrategy = $eventArgs->getEntityManager()->getConfiguration()->getNamingStrategy();
 
-			$metadata->mapManyToMany([
-				'targetEntity' => 'Carrooi\Favorites\Model\Entities\FavoriteItem',
-				'fieldName' => 'favorites',
-				'inversedBy' => $this->associationsManager->hasAssociation($metadata->getName()) ? $this->associationsManager->getField($metadata->getName()) : null,
-				'joinTable' => [
-					'name' => strtolower($namingStrategy->classToTableName($metadata->getName())). '_favorite_item',
-					'joinColumns' => [
-						[
-							'name' => $namingStrategy->joinKeyColumnName($metadata->getName()),
-							'referencedColumnName' => $namingStrategy->referenceColumnName(),
-							'onDelete' => 'CASCADE',
-							'onUpdate' => 'CASCADE',
-						],
-					],
-					'inverseJoinColumns' => [
-						[
-							'name' => 'favorite_id',
-							'referencedColumnName' => $namingStrategy->referenceColumnName(),
-							'onDelete' => 'CASCADE',
-							'onUpdate' => 'CASCADE',
-						],
-					],
-				],
-			]);
-
-		} elseif ($metadata->getName() === $this->favoriteItemClass) {
-			foreach ($this->associationsManager->getAssociations() as $className => $options) {
+			if ($this->associationsManager->hasAssociation($metadata->getName())) {
+				$metadata->mapOneToMany([
+					'targetEntity' => 'Carrooi\Favorites\Model\Entities\FavoriteItem',
+					'fieldName' => 'favorites',
+					'mappedBy' => $this->associationsManager->getField($metadata->getName()),
+				]);
+			} else {
 				$metadata->mapManyToMany([
+					'targetEntity' => 'Carrooi\Favorites\Model\Entities\FavoriteItem',
+					'fieldName' => 'favorites',
+					'joinTable' => [
+						'name' => strtolower($namingStrategy->classToTableName($metadata->getName())). '_favorite_item',
+						'joinColumns' => [
+							[
+								'name' => $namingStrategy->joinKeyColumnName($metadata->getName()),
+								'referencedColumnName' => $namingStrategy->referenceColumnName(),
+								'onDelete' => 'CASCADE',
+								'onUpdate' => 'CASCADE',
+							],
+						],
+						'inverseJoinColumns' => [
+							[
+								'name' => 'favorite_id',
+								'referencedColumnName' => $namingStrategy->referenceColumnName(),
+								'onDelete' => 'CASCADE',
+								'onUpdate' => 'CASCADE',
+							],
+						],
+					],
+				]);
+			}
+
+		}
+
+		if ($metadata->getName() === $this->favoriteItemClass) {
+			foreach ($this->associationsManager->getAssociations() as $className => $options) {
+				$metadata->mapManyToOne([
 					'targetEntity' => $className,
 					'fieldName' => $options['field'],
-					'mappedBy' => 'favorites',
+					'inversedBy' => 'favorites',
 				]);
 			}
 

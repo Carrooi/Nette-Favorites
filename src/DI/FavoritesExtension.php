@@ -20,15 +20,14 @@ class FavoritesExtension extends CompilerExtension implements IEntityProvider, I
 	/** @var array */
 	private $defaults = [
 		'userClass' => null,
-		'favoriteItemClass' => 'Carrooi\Favorites\Model\Entities\DefaultFavoriteItem',
+		'favoriteItemClass' => 'Carrooi\Favorites\Model\DefaultEntities\DefaultFavoriteItem',
 		'associations' => [],
 	];
 
 	/** @var array */
 	private $associationDefaults = [
 		'field' => null,
-		'addMethod' => null,
-		'removeMethod' => null,
+		'setterMethod' => null,
 	];
 
 	/** @var string */
@@ -50,7 +49,7 @@ class FavoritesExtension extends CompilerExtension implements IEntityProvider, I
 		$this->userClass = $config['userClass'];
 		$this->favoriteItemClass = $config['favoriteItemClass'];
 
-		if (!empty($config['associations']) && $this->favoriteItemClass === 'Carrooi\Favorites\Model\Entities\DefaultFavoriteItem') {
+		if (!empty($config['associations']) && $this->favoriteItemClass === 'Carrooi\Favorites\Model\DefaultEntities\DefaultFavoriteItem') {
 			throw new InvalidArgumentException('Can not use custom associations for default favorite entity.');
 		}
 
@@ -64,7 +63,7 @@ class FavoritesExtension extends CompilerExtension implements IEntityProvider, I
 
 			$options = Helpers::merge($options, $this->associationDefaults);
 
-			$associations->addSetup('addAssociation', [$className, $options['field'], $options['addMethod'], $options['removeMethod']]);
+			$associations->addSetup('addAssociation', [$className, $options['field'], $options['setter']]);
 		}
 
 		$builder->addDefinition($this->prefix('facade.favorites'))
@@ -83,9 +82,15 @@ class FavoritesExtension extends CompilerExtension implements IEntityProvider, I
 	 */
 	function getEntityMappings()
 	{
-		return [
+		$mapping = [
 			'Carrooi\Favorites\Model\Entities' => __DIR__. '/../Model/Entities',
 		];
+
+		if ($this->favoriteItemClass === 'Carrooi\Favorites\Model\DefaultEntities\DefaultFavoriteItem') {
+			$mapping['Carrooi\Favorites\Model\DefaultEntities'] = __DIR__. '/../Model/DefaultEntities';
+		}
+
+		return $mapping;
 	}
 
 

@@ -178,7 +178,7 @@ class FavoriteItem extends FavoriteItem
 
 This will come in handy when you'll want to use `FavoriteItem` entity in your queries with `JOIN`.
 
-Just imagine that you want to have eg. `getArticles()` method in `FavoriteItem` entity.
+Just imagine that you want to have eg. `getArticle()` method in `FavoriteItem` entity.
 
 ```php
 namespace App\Model\Entities;
@@ -193,41 +193,24 @@ use Doctrine\ORM\Mapping as ORM;
 class FavoriteItem extends FavoriteItem
 {
 
+	/** @var \App\Model\Entities\Article */
+	private $article;
+
 	/**
-	 * @var \Doctrine\Common\Collections\ArrayCollection
+	 * @return \App\Model\Entities\Article
 	 */
-	private $articles;
-	
-	public function __construct()
+	public function getArticle()
 	{
-		$this->articles = new ArrayCollection;
+		return $this->article;
 	}
 
 	/**
-	 * @return \CarrooiTests\FavoritesApp\Model\Entities\Article[]
-	 */
-	public function getArticles()
-	{
-		return $this->articles->toArray();
-	}
-
-	/**
-	 * @param \CarrooiTests\FavoritesApp\Model\Entities\Article $article
+	 * @param \App\Model\Entities\Article $article
 	 * @return $this
 	 */
-	public function addArticle(Article $article)
+	public function setArticle(Article $article)
 	{
-		$this->articles->add($article);
-		return $this;
-	}
-
-	/**
-	 * @param \CarrooiTests\FavoritesApp\Model\Entities\Article $article
-	 * @return $this
-	 */
-	public function removeArticle(Article $article)
-	{
-		$this->articles->removeElement($article);
+		$this->article = $article;
 		return $this;
 	}
 	
@@ -244,12 +227,14 @@ favorites:
 
 	associations:
 		App\Model\Entities\Article:
-			field: articles
-			addMethod: addArticle
-			removeMethod: removeArticle
+			field: article
+			setter: setArticle
 ```
 
 Now you have your own implementation of `FavoriteItem` entity.
+
+**Please also notice that if you'll use this custom association mapping, this module will work with one-to-many relations.
+Otherwise it will be many-to-many.**
 
 ## Changelog
 

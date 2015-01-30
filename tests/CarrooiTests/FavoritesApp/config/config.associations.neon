@@ -4,6 +4,5 @@ favorites:
 
 	associations:
 		CarrooiTests\FavoritesApp\Model\Entities\Article:
-			field: articles
-			addMethod: addArticle
-			removeMethod: removeArticle
+			field: article
+			setter: setArticle

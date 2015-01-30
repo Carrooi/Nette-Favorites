@@ -79,8 +79,8 @@ class FavoriteItemsFacade extends Object
 		$item->addFavorite($favorite);
 
 		$class = get_class($item);
-		if ($this->associationsManager->hasAssociation($class) && ($addMethod = $this->associationsManager->getAddMethod($class))) {
-			$favorite->$addMethod($item);
+		if ($this->associationsManager->hasAssociation($class) && ($setter = $this->associationsManager->getSetter($class))) {
+			$favorite->$setter($item);
 		}
 
 		$this->dao->getEntityManager()->persist([
@@ -116,11 +116,6 @@ class FavoriteItemsFacade extends Object
 
 		$item->removeFavorite($favorite);
 
-		$class = get_class($item);
-		if ($this->associationsManager->hasAssociation($class) && ($removeMethod = $this->associationsManager->getRemoveMethod($class))) {
-			$favorite->$removeMethod($item);
-		}
-
 		$this->dao->getEntityManager()->remove($favorite)->flush();
 
 		return $this;
@@ -138,9 +133,8 @@ class FavoriteItemsFacade extends Object
 			$field = $this->associationsManager->getField($class);
 
 			return $this->dao->createQueryBuilder('f')
-				->join('f.'. $field, 'i')
 				->andWhere('f.user = :user')->setParameter('user', $user)
-				->andWhere('i = :item')->setParameter('item', $item)
+				->andWhere('f.'. $field. ' = :item')->setParameter('item', $item)
 				->getQuery()
 				->getOneOrNullResult();
 		} else {

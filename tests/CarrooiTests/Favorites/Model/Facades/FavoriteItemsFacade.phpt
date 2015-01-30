@@ -107,7 +107,8 @@ class FavoriteItemsFacadeTest extends TestCase
 
 	public function testFindOneByUserAndItem_customAssociation()
 	{
-		$this->createContainer(__DIR__. '/../config.associations.neon');
+		$this->database = 'associations';
+		$this->createContainer('config.associations');
 
 		$article = $this->articles->create();
 		$user = $this->users->create();

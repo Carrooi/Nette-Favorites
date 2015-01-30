@@ -3,7 +3,6 @@
 namespace CarrooiTests\FavoritesApp\Model\Entities;
 
 use Carrooi\Favorites\Model\Entities\FavoriteItem;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -17,24 +16,16 @@ class CustomFavoriteItem extends FavoriteItem
 {
 
 
-	/**
-	 * @var \Doctrine\Common\Collections\ArrayCollection
-	 */
-	private $articles;
-
-
-	public function __construct()
-	{
-		$this->articles = new ArrayCollection;
-	}
+	/** @var \CarrooiTests\FavoritesApp\Model\Entities\Article */
+	private $article;
 
 
 	/**
-	 * @return \CarrooiTests\FavoritesApp\Model\Entities\Article[]
+	 * @return \CarrooiTests\FavoritesApp\Model\Entities\Article
 	 */
-	public function getArticles()
+	public function getArticle()
 	{
-		return $this->articles->toArray();
+		return $this->article;
 	}
 
 
@@ -42,20 +33,9 @@ class CustomFavoriteItem extends FavoriteItem
 	 * @param \CarrooiTests\FavoritesApp\Model\Entities\Article $article
 	 * @return $this
 	 */
-	public function addArticle(Article $article)
+	public function setArticle(Article $article = null)
 	{
-		$this->articles->add($article);
-		return $this;
-	}
-
-
-	/**
-	 * @param \CarrooiTests\FavoritesApp\Model\Entities\Article $article
-	 * @return $this
-	 */
-	public function removeArticle(Article $article)
-	{
-		$this->articles->removeElement($article);
+		$this->article = $article;
 		return $this;
 	}
 

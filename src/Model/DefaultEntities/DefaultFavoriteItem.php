@@ -1,7 +1,8 @@
 <?php
 
-namespace Carrooi\Favorites\Model\Entities;
+namespace Carrooi\Favorites\Model\DefaultEntities;
 
+use Carrooi\Favorites\Model\Entities\FavoriteItem;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

@@ -14,13 +14,18 @@ class TestCase extends BaseTestCase
 {
 
 
+	/** @var string */
+	protected $database = null;
+
+
 	/**
 	 * @param string $customConfig
 	 * @return \Nette\DI\Container
 	 */
 	protected function createContainer($customConfig = null)
 	{
-		copy(__DIR__. '/../FavoritesApp/Model/database', TEMP_DIR. '/database');
+		$database = $this->database === null ? 'database' : 'database_'. $this->database;
+		copy(__DIR__. '/../FavoritesApp/Model/'. $database, TEMP_DIR. '/database');
 
 		$config = new Configurator;
 		$config->setTempDirectory(TEMP_DIR);
@@ -30,10 +35,20 @@ class TestCase extends BaseTestCase
 		$config->addConfig(FileMock::create('parameters: {databasePath: %tempDir%/database}', 'neon'));
 
 		if ($customConfig) {
+			if (pathinfo($customConfig, PATHINFO_EXTENSION) !== 'neon') {
+				$customConfig = __DIR__. '/../FavoritesApp/config/'. $customConfig. '.neon';
+			}
+
 			$config->addConfig($customConfig);
 		}
 
 		return $config->createContainer();
+	}
+
+
+	public function tearDown()
+	{
+		$this->database = null;
 	}
 
 }

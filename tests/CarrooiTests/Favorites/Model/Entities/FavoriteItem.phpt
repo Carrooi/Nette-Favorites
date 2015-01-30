@@ -10,9 +10,7 @@
 namespace CarrooiTests\Favorites\Model\Entities;
 
 use CarrooiTests\Favorites\TestCase;
-use CarrooiTests\FavoritesApp\Model\Entities\Article;
 use Tester\Assert;
-use Tester\FileMock;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
@@ -52,16 +50,16 @@ class FavoriteItemTest extends TestCase
 
 	public function testCustomAssociation()
 	{
-		$this->createContainer(__DIR__. '/../config.associations.neon');
+		$this->database = 'associations';
+		$this->createContainer('config.associations');
 
 		$user = $this->users->create();
 		$article = $this->articles->create();
 
 		$favorite = $this->favorites->addItemToFavorites($user, $article);		/** @var \CarrooiTests\FavoritesApp\Model\Entities\CustomFavoriteItem $favorite */
 
-		Assert::count(1, $favorite->getArticles());
-		Assert::type('CarrooiTests\FavoritesApp\Model\Entities\Article', $favorite->getArticles()[0]);
-		Assert::same($article->getId(), $favorite->getArticles()[0]->getId());
+		Assert::type('CarrooiTests\FavoritesApp\Model\Entities\Article', $favorite->getArticle());
+		Assert::same($article->getId(), $favorite->getArticle()->getId());
 	}
 
 }

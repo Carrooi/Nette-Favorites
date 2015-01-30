@@ -20,16 +20,14 @@ class AssociationsManager extends Object
 	/**
 	 * @param string $className
 	 * @param string $field
-	 * @param string $addMethod
-	 * @param string $removeMethod
+	 * @param string $setter
 	 * @return $this
 	 */
-	public function addAssociation($className, $field, $addMethod = null, $removeMethod = null)
+	public function addAssociation($className, $field, $setter = null)
 	{
 		$this->associations[$className] = [
 			'field' => $field,
-			'addMethod' => $addMethod,
-			'removeMethod' => $removeMethod,
+			'setter' => $setter,
 		];
 
 		return $this;
@@ -84,29 +82,14 @@ class AssociationsManager extends Object
 	 * @param string $className
 	 * @return string
 	 */
-	public function getAddMethod($className)
+	public function getSetter($className)
 	{
 		$association = $this->getAssociation($className);
 		if (!$association) {
 			throw new InvalidStateException('Association '. $className. ' is not registered.');
 		}
 
-		return $association['addMethod'];
-	}
-
-
-	/**
-	 * @param string $className
-	 * @return string
-	 */
-	public function getRemoveMethod($className)
-	{
-		$association = $this->getAssociation($className);
-		if (!$association) {
-			throw new InvalidStateException('Association '. $className. ' is not registered.');
-		}
-
-		return $association['removeMethod'];
+		return $association['setter'];
 	}
 
 }
