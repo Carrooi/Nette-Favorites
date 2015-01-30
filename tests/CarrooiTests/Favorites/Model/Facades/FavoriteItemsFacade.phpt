@@ -180,6 +180,22 @@ class FavoriteItemsFacadeTest extends TestCase
 	}
 
 
+	public function testRemoveItemFromFavorites_associations()
+	{
+		$this->database = 'associations';
+		$this->createContainer('config.associations');
+
+		$user = $this->users->create();
+		$article = $this->articles->create();
+
+		$this->favorites->addItemToFavorites($user, $article);
+
+		$this->favorites->removeItemFromFavorites($user, $article);
+
+		Assert::false($this->favorites->hasItemInFavorites($user, $article));
+	}
+
+
 	public function testFindAllItemsByUserAndType()
 	{
 		$this->createContainer();
