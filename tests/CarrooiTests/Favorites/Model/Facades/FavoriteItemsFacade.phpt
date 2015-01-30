@@ -105,6 +105,27 @@ class FavoriteItemsFacadeTest extends TestCase
 	}
 
 
+	public function testFindOneByUserAndItem_customAssociation()
+	{
+		$this->createContainer(__DIR__. '/../config.associations.neon');
+
+		$article = $this->articles->create();
+		$user = $this->users->create();
+
+		$favorite = $this->favorites->addItemToFavorites($user, $article);
+		$found = $this->favorites->findOneByUserAndItem($user, $article);
+
+		Assert::notSame(null, $found);
+		Assert::same($favorite->getId(), $found->getId());
+
+		$article = $this->articles->create();
+		$favorite = $this->favorites->addItemToFavorites($user, $article);
+		$found = $this->favorites->findOneByUserAndItem($user, $article);
+
+		Assert::same($favorite->getId(), $found->getId());
+	}
+
+
 	public function testHasInFavorites_false()
 	{
 		$this->createContainer();

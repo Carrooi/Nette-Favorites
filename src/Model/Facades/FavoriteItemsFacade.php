@@ -20,21 +20,26 @@ class FavoriteItemsFacade extends Object
 {
 
 
-	/** @var string */
-	private $class;
-
 	/** @var \Kdyby\Doctrine\EntityDao */
 	private $dao;
+
+	/** @var \Carrooi\Favorites\Model\Facades\AssociationsManager */
+	private $associationsManager;
+
+	/** @var string */
+	private $class;
 
 
 	/**
 	 * @param string $class
 	 * @param \Kdyby\Doctrine\EntityManager $em
+	 * @param \Carrooi\Favorites\Model\Facades\AssociationsManager $associationsManager
 	 */
-	public function __construct($class, EntityManager $em)
+	public function __construct($class, EntityManager $em, AssociationsManager $associationsManager)
 	{
-		$this->class = $class;
 		$this->dao = $em->getRepository('Carrooi\Favorites\Model\Entities\IFavoriteItemEntity');
+		$this->associationsManager = $associationsManager;
+		$this->class = $class;
 	}
 
 
@@ -73,6 +78,11 @@ class FavoriteItemsFacade extends Object
 
 		$item->addFavorite($favorite);
 
+		$class = get_class($item);
+		if ($this->associationsManager->hasAssociation($class) && ($addMethod = $this->associationsManager->getAddMethod($class))) {
+			$favorite->$addMethod($item);
+		}
+
 		$this->dao->getEntityManager()->persist([
 			$favorite, $item,
 		])->flush();
@@ -106,6 +116,11 @@ class FavoriteItemsFacade extends Object
 
 		$item->removeFavorite($favorite);
 
+		$class = get_class($item);
+		if ($this->associationsManager->hasAssociation($class) && ($removeMethod = $this->associationsManager->getRemoveMethod($class))) {
+			$favorite->$removeMethod($item);
+		}
+
 		$this->dao->getEntityManager()->remove($favorite)->flush();
 
 		return $this;
@@ -119,26 +134,37 @@ class FavoriteItemsFacade extends Object
 	 */
 	public function findOneByUserAndItem(IUserEntity $user, IFavoritableEntity $item)
 	{
-		$rsm = new ResultSetMapping;
-		$rsm->addEntityResult('Carrooi\Favorites\Model\Entities\IFavoriteItemEntity', 'f');
-		$rsm->addFieldResult('f', 'id', 'id');
-		$rsm->addMetaResult('f', 'user_id', 'user');
+		if ($this->associationsManager->hasAssociation($class = get_class($item))) {
+			$field = $this->associationsManager->getField($class);
 
-		$favoriteTable = $this->dao->getEntityManager()->getClassMetadata('Carrooi\Favorites\Model\Entities\IFavoriteItemEntity')->getTableName();
-		$articleMetadata = $this->dao->getEntityManager()->getClassMetadata(get_class($item))->getAssociationMapping('favorites');
+			return $this->dao->createQueryBuilder('f')
+				->join('f.'. $field, 'i')
+				->andWhere('f.user = :user')->setParameter('user', $user)
+				->andWhere('i = :item')->setParameter('item', $item)
+				->getQuery()
+				->getOneOrNullResult();
+		} else {
+			$rsm = new ResultSetMapping;
+			$rsm->addEntityResult('Carrooi\Favorites\Model\Entities\IFavoriteItemEntity', 'f');
+			$rsm->addFieldResult('f', 'id', 'id');
+			$rsm->addMetaResult('f', 'user_id', 'user');
 
-		$joinTable = $articleMetadata['joinTable']['name'];
-		$joinColumn = $articleMetadata['joinTable']['joinColumns'][0]['name'];
+			$favoriteTable = $this->dao->getEntityManager()->getClassMetadata('Carrooi\Favorites\Model\Entities\IFavoriteItemEntity')->getTableName();
+			$articleMetadata = $this->dao->getEntityManager()->getClassMetadata(get_class($item))->getAssociationMapping('favorites');
 
-		$sql = "SELECT f.id, f.user_id FROM $favoriteTable AS f "
-			. "INNER JOIN $joinTable AS i ON i.favorite_id = f.id "
-			. "WHERE f.user_id = :userId AND i.$joinColumn = :itemId";
+			$joinTable = $articleMetadata['joinTable']['name'];
+			$joinColumn = $articleMetadata['joinTable']['joinColumns'][0]['name'];
 
-		$query = $this->dao->createNativeQuery($sql, $rsm);
-		$query->setParameter('userId', $user->getId());
-		$query->setParameter('itemId', $item->getId());
+			$sql = "SELECT f.id, f.user_id FROM $favoriteTable AS f "
+				. "INNER JOIN $joinTable AS i ON i.favorite_id = f.id "
+				. "WHERE f.user_id = :userId AND i.$joinColumn = :itemId";
 
-		return $query->getOneOrNullResult();
+			$query = $this->dao->createNativeQuery($sql, $rsm);
+			$query->setParameter('userId', $user->getId());
+			$query->setParameter('itemId', $item->getId());
+
+			return $query->getOneOrNullResult();
+		}
 	}
 
 

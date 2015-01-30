@@ -161,19 +161,92 @@ favorites:
 ```php
 namespace App\Model\Entities;
 
-use Carrooi\Favorites\Model\Entities\DefaultFavoriteItem;
+use Carrooi\Favorites\Model\Entities\FavoriteItem;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  * @author David Kudera
  */
-class FavoriteItem extends DefaultFavoriteItem
+class FavoriteItem extends FavoriteItem
 {
 
 	// ...
 	
 }
+```
+
+This will come in handy when you'll want to use `FavoriteItem` entity in your queries with `JOIN`.
+
+Just imagine that you want to have eg. `getArticles()` method in `FavoriteItem` entity.
+
+```php
+namespace App\Model\Entities;
+
+use Carrooi\Favorites\Model\Entities\FavoriteItem;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ * @author David Kudera
+ */
+class FavoriteItem extends FavoriteItem
+{
+
+	/**
+	 * @var \Doctrine\Common\Collections\ArrayCollection
+	 */
+	private $articles;
+	
+	public function __construct()
+	{
+		$this->articles = new ArrayCollection;
+	}
+
+	/**
+	 * @return \CarrooiTests\FavoritesApp\Model\Entities\Article[]
+	 */
+	public function getArticles()
+	{
+		return $this->articles->toArray();
+	}
+
+	/**
+	 * @param \CarrooiTests\FavoritesApp\Model\Entities\Article $article
+	 * @return $this
+	 */
+	public function addArticle(Article $article)
+	{
+		$this->articles->add($article);
+		return $this;
+	}
+
+	/**
+	 * @param \CarrooiTests\FavoritesApp\Model\Entities\Article $article
+	 * @return $this
+	 */
+	public function removeArticle(Article $article)
+	{
+		$this->articles->removeElement($article);
+		return $this;
+	}
+	
+}
+```
+
+And add configuration:
+
+```neon
+favorites:
+
+	userClass: App\Model\Entities\User
+	favoriteItemClass: App\Model\Entities\FavoriteItem
+
+	associations:
+		App\Model\Entities\Article:
+			field: articles
+			addMethod: addArticle
+			removeMethod: removeArticle
 ```
 
 Now you have your own implementation of `FavoriteItem` entity.

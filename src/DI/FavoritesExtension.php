@@ -7,6 +7,7 @@ use Kdyby\Doctrine\DI\IEntityProvider;
 use Kdyby\Doctrine\DI\ITargetEntityProvider;
 use Kdyby\Events\DI\EventsExtension;
 use Nette\DI\CompilerExtension;
+use Nette\DI\Config\Helpers;
 
 /**
  *
@@ -20,6 +21,14 @@ class FavoritesExtension extends CompilerExtension implements IEntityProvider, I
 	private $defaults = [
 		'userClass' => null,
 		'favoriteItemClass' => 'Carrooi\Favorites\Model\Entities\DefaultFavoriteItem',
+		'associations' => [],
+	];
+
+	/** @var array */
+	private $associationDefaults = [
+		'field' => null,
+		'addMethod' => null,
+		'removeMethod' => null,
 	];
 
 	/** @var string */
@@ -41,13 +50,31 @@ class FavoritesExtension extends CompilerExtension implements IEntityProvider, I
 		$this->userClass = $config['userClass'];
 		$this->favoriteItemClass = $config['favoriteItemClass'];
 
-		$builder->addDefinition($this->prefix('events.relations'))
-			->setClass('Carrooi\Favorites\Model\Events\FavoritesRelationSubscriber')
-			->addTag(EventsExtension::TAG_SUBSCRIBER);
+		if (!empty($config['associations']) && $this->favoriteItemClass === 'Carrooi\Favorites\Model\Entities\DefaultFavoriteItem') {
+			throw new InvalidArgumentException('Can not use custom associations for default favorite entity.');
+		}
+
+		$associations = $builder->addDefinition($this->prefix('facade.associations'))
+			->setClass('Carrooi\Favorites\Model\Facades\AssociationsManager');
+
+		foreach ($config['associations'] as $className => $options) {
+			if (is_string($options)) {
+				$options = ['field' => $options];
+			}
+
+			$options = Helpers::merge($options, $this->associationDefaults);
+
+			$associations->addSetup('addAssociation', [$className, $options['field'], $options['addMethod'], $options['removeMethod']]);
+		}
 
 		$builder->addDefinition($this->prefix('facade.favorites'))
 			->setClass('Carrooi\Favorites\Model\Facades\FavoriteItemsFacade')
 			->setArguments([$this->favoriteItemClass]);
+
+		$builder->addDefinition($this->prefix('events.relations'))
+			->setClass('Carrooi\Favorites\Model\Events\FavoritesRelationSubscriber')
+			->setArguments([$this->favoriteItemClass])
+			->addTag(EventsExtension::TAG_SUBSCRIBER);
 	}
 
 

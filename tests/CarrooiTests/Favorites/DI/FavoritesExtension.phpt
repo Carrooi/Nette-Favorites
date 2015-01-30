@@ -78,6 +78,16 @@ class FavoritesExtensionTest extends TestCase
 		Assert::type($entity, $this->favorites->createEntity());
 	}
 
+
+	public function testCustomAssociationsWithDefaultFavoriteItemEntity()
+	{
+		$config = FileMock::create('favorites: {associations: {Nette\Object: objects}}', 'neon');
+
+		Assert::exception(function() use ($config) {
+			$this->createContainer($config);
+		}, 'Carrooi\Favorites\InvalidArgumentException', 'Can not use custom associations for default favorite entity.');
+	}
+
 }
 
 

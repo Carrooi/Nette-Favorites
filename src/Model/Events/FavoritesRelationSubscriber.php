@@ -2,6 +2,8 @@
 
 namespace Carrooi\Favorites\Model\Events;
 
+use Carrooi\Favorites\Model\Facades\AssociationsManager;
+use Carrooi\Favorites\Model\Facades\FavoriteItemsFacade;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
 use Kdyby\Events\Subscriber;
@@ -14,7 +16,22 @@ class FavoritesRelationSubscriber implements Subscriber
 {
 
 
-	const FAVORITABLE_INTERFACE = 'Carrooi\Favorites\Model\Entities\IFavoritableEntity';
+	/** @var \Carrooi\Favorites\Model\Facades\AssociationsManager */
+	private $associationsManager;
+
+	/** @var string */
+	private $favoriteItemClass;
+
+
+	/**
+	 * @param string $favoriteItemClass
+	 * @param \Carrooi\Favorites\Model\Facades\AssociationsManager $associationsManager
+	 */
+	public function __construct($favoriteItemClass, AssociationsManager $associationsManager)
+	{
+		$this->associationsManager = $associationsManager;
+		$this->favoriteItemClass = $favoriteItemClass;
+	}
 
 
 	/**
@@ -32,35 +49,44 @@ class FavoritesRelationSubscriber implements Subscriber
 	{
 		$metadata = $eventArgs->getClassMetadata();			/** @var \Kdyby\Doctrine\Mapping\ClassMetadata $metadata */
 
-		if (!in_array(self::FAVORITABLE_INTERFACE, class_implements($metadata->getName()))) {
-			return;
+		if (in_array('Carrooi\Favorites\Model\Entities\IFavoritableEntity', class_implements($metadata->getName()))) {
+			$namingStrategy = $eventArgs->getEntityManager()->getConfiguration()->getNamingStrategy();
+
+			$metadata->mapManyToMany([
+				'targetEntity' => 'Carrooi\Favorites\Model\Entities\FavoriteItem',
+				'fieldName' => 'favorites',
+				'inversedBy' => $this->associationsManager->hasAssociation($metadata->getName()) ? $this->associationsManager->getField($metadata->getName()) : null,
+				'joinTable' => [
+					'name' => strtolower($namingStrategy->classToTableName($metadata->getName())). '_favorite_item',
+					'joinColumns' => [
+						[
+							'name' => $namingStrategy->joinKeyColumnName($metadata->getName()),
+							'referencedColumnName' => $namingStrategy->referenceColumnName(),
+							'onDelete' => 'CASCADE',
+							'onUpdate' => 'CASCADE',
+						],
+					],
+					'inverseJoinColumns' => [
+						[
+							'name' => 'favorite_id',
+							'referencedColumnName' => $namingStrategy->referenceColumnName(),
+							'onDelete' => 'CASCADE',
+							'onUpdate' => 'CASCADE',
+						],
+					],
+				],
+			]);
+
+		} elseif ($metadata->getName() === $this->favoriteItemClass) {
+			foreach ($this->associationsManager->getAssociations() as $className => $options) {
+				$metadata->mapManyToMany([
+					'targetEntity' => $className,
+					'fieldName' => $options['field'],
+					'mappedBy' => 'favorites',
+				]);
+			}
+
 		}
-
-		$namingStrategy = $eventArgs->getEntityManager()->getConfiguration()->getNamingStrategy();
-
-		$metadata->mapManyToMany([
-			'targetEntity' => 'Carrooi\Favorites\Model\Entities\FavoriteItem',
-			'fieldName' => 'favorites',
-			'joinTable' => [
-				'name' => strtolower($namingStrategy->classToTableName($metadata->getName())). '_favorite_item',
-				'joinColumns' => [
-					[
-						'name' => $namingStrategy->joinKeyColumnName($metadata->getName()),
-						'referencedColumnName' => $namingStrategy->referenceColumnName(),
-						'onDelete' => 'CASCADE',
-						'onUpdate' => 'CASCADE',
-					],
-				],
-				'inverseJoinColumns' => [
-					[
-						'name' => 'favorite_id',
-						'referencedColumnName' => $namingStrategy->referenceColumnName(),
-						'onDelete' => 'CASCADE',
-						'onUpdate' => 'CASCADE',
-					],
-				],
-			],
-		]);
 	}
 
 }

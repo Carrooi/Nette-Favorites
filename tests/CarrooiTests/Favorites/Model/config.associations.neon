@@ -1,0 +1,9 @@
+favorites:
+
+	favoriteItemClass: CarrooiTests\FavoritesApp\Model\Entities\CustomFavoriteItem
+
+	associations:
+		CarrooiTests\FavoritesApp\Model\Entities\Article:
+			field: articles
+			addMethod: addArticle
+			removeMethod: removeArticle
