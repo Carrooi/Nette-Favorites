@@ -54,13 +54,13 @@ class FavoritesRelationSubscriber implements Subscriber
 
 			if ($this->associationsManager->hasAssociation($metadata->getName())) {
 				$metadata->mapOneToMany([
-					'targetEntity' => 'Carrooi\Favorites\Model\Entities\FavoriteItem',
+					'targetEntity' => 'Carrooi\Favorites\Model\Entities\IFavoriteItemEntity',
 					'fieldName' => 'favorites',
 					'mappedBy' => $this->associationsManager->getField($metadata->getName()),
 				]);
 			} else {
 				$metadata->mapManyToMany([
-					'targetEntity' => 'Carrooi\Favorites\Model\Entities\FavoriteItem',
+					'targetEntity' => 'Carrooi\Favorites\Model\Entities\IFavoriteItemEntity',
 					'fieldName' => 'favorites',
 					'joinTable' => [
 						'name' => strtolower($namingStrategy->classToTableName($metadata->getName())). '_favorite_item',
