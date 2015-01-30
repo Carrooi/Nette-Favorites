@@ -181,4 +181,23 @@ class FavoriteItemsFacade extends Object
 		return new ResultSet($dql->getQuery());
 	}
 
+
+	/**
+	 * @param \Carrooi\Favorites\Model\Entities\IUserEntity $user
+	 * @return \Carrooi\Favorites\Model\Entities\IFavoriteItemEntity[]
+	 */
+	public function findAllByUser(IUserEntity $user)
+	{
+		$dql = $this->dao->createQueryBuilder('f')
+			->andWhere('f.user = :user')->setParameter('user', $user);
+
+		foreach ($this->associationsManager->getAssociations() as $class => $options) {
+			$dql
+				->leftJoin('f.'. $options['field'], $options['field'])
+				->addSelect($options['field']);
+		}
+
+		return $dql->getQuery()->getResult();
+	}
+
 }

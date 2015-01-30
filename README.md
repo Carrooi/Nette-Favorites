@@ -141,13 +141,23 @@ $user = $this->users->getCurrentSomehow();
 $favoritesFacade->hasItemInFavorites($user, $article);
 ```
 
-#### Find all items by user
+#### Find all items by user and type
 
 ```php
 $user = $this->user->getCurrentSomehow();
 
 $favoritesFacade->findAllItemsByUserAndType($user, Article::getClassName());
 ```
+
+#### Find all favorites by user
+
+```php
+$user = $this->user->getCurrentSomehow();
+
+$favoritesFacade->findAllByUser($user);
+```
+
+**That method can be used only in combination with custom associations. See bellow**
 
 ## Custom FavoriteItem entity
 

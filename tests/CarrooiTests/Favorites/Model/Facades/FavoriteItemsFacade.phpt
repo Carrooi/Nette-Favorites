@@ -208,6 +208,34 @@ class FavoriteItemsFacadeTest extends TestCase
 		}, 'Carrooi\Favorites\InvalidArgumentException', 'Could not find favorite items for Nette\Object entity.');
 	}
 
+
+	public function testFindAllByUser()
+	{
+		$this->database = 'associations';
+		$this->createContainer('config.associations');
+
+		$user = $this->users->create();
+
+		$articles = [
+			$this->articles->create(),
+			$this->articles->create(),
+			$this->articles->create(),
+		];
+
+		$this->favorites->addItemToFavorites($user, $articles[0]);
+		$this->favorites->addItemToFavorites($user, $articles[1]);
+		$this->favorites->addItemToFavorites($user, $articles[2]);
+
+		$this->favorites->addItemToFavorites($this->users->create(), $this->articles->create());
+
+		$favorites = $this->favorites->findAllByUser($user);
+
+		Assert::count(3, $favorites);
+		Assert::same($articles[0]->getId(), $favorites[0]->getArticle()->getId());
+		Assert::same($articles[1]->getId(), $favorites[1]->getArticle()->getId());
+		Assert::same($articles[2]->getId(), $favorites[2]->getArticle()->getId());
+	}
+
 }
 
 
