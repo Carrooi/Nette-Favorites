@@ -28,7 +28,12 @@ class AssociationsManagerTest extends TestCase
 		$manager = new AssociationsManager;
 		$manager->addAssociation('Nette\Object', 'object');
 
-		Assert::same('Nette\Object', $manager->getRealClass('Carrooi\Favorites\Model\Facades\FavoriteItemsFacade'));
+		$class = 'Carrooi\Favorites\Model\Facades\FavoriteItemsFacade';
+
+		Assert::same($class, $manager->getRealClass($class));
+
+		Assert::notSame(null, $manager->getAssociation($class));
+		Assert::same('object', $manager->getField($class));
 	}
 
 }

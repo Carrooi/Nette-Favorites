@@ -48,7 +48,9 @@ class AssociationsManager extends Object
 
 		foreach ($parents as $parent) {
 			if (isset($this->associations[$parent])) {
-				return $parent;
+				$this->addAssociation($className, $this->associations[$parent]['field'], $this->associations[$parent]['setter']);
+
+				return $className;
 			}
 		}
 
