@@ -36,11 +36,33 @@ class AssociationsManager extends Object
 
 	/**
 	 * @param string $className
+	 * @return string
+	 */
+	public function getRealClass($className)
+	{
+		if (isset($this->associations[$className])) {
+			return $className;
+		}
+
+		$parents = class_parents($className);
+
+		foreach ($parents as $parent) {
+			if (isset($this->associations[$parent])) {
+				return $parent;
+			}
+		}
+
+		return null;
+	}
+
+
+	/**
+	 * @param string $className
 	 * @return bool
 	 */
 	public function hasAssociation($className)
 	{
-		return isset($this->associations[$className]);
+		return $this->getRealClass($className) !== null;
 	}
 
 
@@ -50,6 +72,7 @@ class AssociationsManager extends Object
 	 */
 	public function getAssociation($className)
 	{
+		$className = $this->getRealClass($className);
 		return $this->hasAssociation($className) ? $this->associations[$className] : null;
 	}
 
