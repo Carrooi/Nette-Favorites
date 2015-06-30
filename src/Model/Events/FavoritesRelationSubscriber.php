@@ -3,7 +3,6 @@
 namespace Carrooi\Favorites\Model\Events;
 
 use Carrooi\Favorites\Model\Facades\AssociationsManager;
-use Carrooi\Favorites\Model\Facades\FavoriteItemsFacade;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
 use Kdyby\Events\Subscriber;
@@ -45,6 +44,9 @@ class FavoritesRelationSubscriber implements Subscriber
 	}
 
 
+	/**
+	 * @param \Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs
+	 */
 	public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
 	{
 		$metadata = $eventArgs->getClassMetadata();			/** @var \Kdyby\Doctrine\Mapping\ClassMetadata $metadata */
@@ -54,13 +56,13 @@ class FavoritesRelationSubscriber implements Subscriber
 
 			if ($this->associationsManager->hasAssociation($metadata->getName())) {
 				$metadata->mapOneToMany([
-					'targetEntity' => 'Carrooi\Favorites\Model\Entities\IFavoriteItemEntity',
+					'targetEntity' => $this->favoriteItemClass,
 					'fieldName' => 'favorites',
 					'mappedBy' => $this->associationsManager->getField($metadata->getName()),
 				]);
 			} else {
 				$metadata->mapManyToMany([
-					'targetEntity' => 'Carrooi\Favorites\Model\Entities\IFavoriteItemEntity',
+					'targetEntity' => $this->favoriteItemClass,
 					'fieldName' => 'favorites',
 					'joinTable' => [
 						'name' => strtolower($namingStrategy->classToTableName($metadata->getName())). '_favorite_item',
