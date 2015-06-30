@@ -268,5 +268,9 @@ Otherwise it will be many-to-many.**
 
 ## Changelog
 
+* 1.0.1
+	+ Fixed tests running under nette 2.3
+	+ Fix relations mapping
+
 * 1.0.0
 	+ First version
