@@ -12,6 +12,7 @@
 		}
 	],
 	"require": {
+		"php": ">=5.4",
 		"nette/utils": "~2.2",
 		"nette/di": "~2.2",
 		"nette/application": "~2.2",
