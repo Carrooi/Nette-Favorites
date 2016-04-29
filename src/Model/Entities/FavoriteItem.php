@@ -21,6 +21,7 @@ abstract class FavoriteItem extends BaseEntity implements IFavoriteItemEntity
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="Carrooi\Favorites\Model\Entities\IUserEntity")
+	 * @ORM\JoinColumn(onDelete="cascade")
 	 * @var \Carrooi\Favorites\Model\Entities\IUserEntity
 	 */
 	private $user;

@@ -94,6 +94,10 @@ class FavoritesRelationSubscriber implements Subscriber
 					'targetEntity' => $className,
 					'fieldName' => $options['field'],
 					'inversedBy' => 'favorites',
+					'joinColumns' => [[
+						'onDelete' => 'CASCADE',
+						'onUpdate' => 'CASCADE',
+					]],
 				]);
 			}
 
