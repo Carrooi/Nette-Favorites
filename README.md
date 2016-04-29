@@ -268,6 +268,9 @@ Otherwise it will be many-to-many.**
 
 ## Changelog
 
+* 1.0.2
+	+ Add missing cascade removing for user [#1](https://github.com/Carrooi/Nette-Favorites/pull/1)
+
 * 1.0.1
 	+ Fixed tests running under nette 2.3
 	+ Fix relations mapping
